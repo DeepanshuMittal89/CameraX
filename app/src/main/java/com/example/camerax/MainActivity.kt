@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo saved: $savedUri"
 
-                    Toast.makeText(this@MainActivity, msg, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -101,7 +101,12 @@ class MainActivity : AppCompatActivity() {
                 this,
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
-        )
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            return
+        }
         videoCapture.startRecording(
             outputOption, ContextCompat.getMainExecutor(this),
             object : VideoCapture.OnVideoSavedCallback {
