@@ -14,16 +14,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></androidx.camera.view.PreviewView>
-    <Button
-        android:id="@+id/photoClickBtn"
-        android:layout_width="100sp"
-        android:layout_height="105sp"
-        android:layout_marginBottom="50sp"
-        android:backgroundTint="@color/white"
-        android:visibility="visible"
-        android:background="@drawable/click_btn"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="170sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"></Button>
+        app:layout_constraintRight_toRightOf="parent"
+        app:cardBackgroundColor="@color/black">
+        <Button
+            android:id="@+id/photoClickBtn"
+            android:layout_width="100sp"
+            android:layout_height="105sp"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/click_btn"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="50sp"></Button>
+        <Button
+            android:id="@+id/videoRecordBtn"
+            android:layout_width="150sp"
+            android:layout_height="100sp"
+            android:backgroundTint="@color/white"
+            android:visibility="visible"
+            android:text="Recoding"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="220sp"></Button>
+
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
