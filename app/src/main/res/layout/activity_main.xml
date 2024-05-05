@@ -16,32 +16,67 @@
         app:layout_constraintTop_toTopOf="parent"></androidx.camera.view.PreviewView>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="170sp"
+        android:layout_height="150sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:cardBackgroundColor="@color/black">
-        <Button
-            android:id="@+id/photoClickBtn"
-            android:layout_width="100sp"
-            android:layout_height="105sp"
-            android:backgroundTint="@color/white"
+        <ImageView
+            android:id="@+id/flip_btn"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:src="@drawable/baseline_flip_camera_android_24"
             android:background="@drawable/click_btn"
-            android:layout_marginTop="20sp"
-            android:layout_marginLeft="50sp"></Button>
-        <Button
-            android:id="@+id/videoRecordBtn"
-            android:layout_width="150sp"
-            android:layout_height="100sp"
+            android:layout_marginTop="50sp"
+            android:padding="10sp"
+            android:layout_marginLeft="30sp">
+
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/photoClickBtn"
+            android:layout_width="80sp"
+            android:layout_height="85sp"
             android:backgroundTint="@color/white"
+            android:src="@drawable/baseline_camera_24"
+            android:layout_marginTop="40sp"
+            android:layout_marginLeft="160sp"></ImageView>
+        <ImageView
+            android:id="@+id/videoRecordBtn"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
             android:visibility="visible"
-            android:text="Recoding"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:layout_marginTop="20sp"
-            android:layout_marginLeft="220sp"></Button>
+            android:src="@drawable/baseline_video_camera_back_24"
+            android:background="@drawable/click_btn"
+            android:padding="10sp"
+            android:layout_marginTop="50sp"
+            android:layout_marginLeft="310sp"></ImageView>
 
     </androidx.cardview.widget.CardView>
+    <ImageView
+        android:id="@+id/flash_off"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:src="@drawable/baseline_flash_off_24"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="20sp"
+        android:visibility="visible"
+        android:layout_marginTop="80sp">
+
+    </ImageView>
+    <ImageView
+        android:id="@+id/flas_on"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:src="@drawable/baseline_flash_on_24"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="20sp"
+        android:visibility="invisible"
+        android:layout_marginTop="80sp">
+
+    </ImageView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

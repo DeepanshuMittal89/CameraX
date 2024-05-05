@@ -2,16 +2,18 @@ package com.example.camerax
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
+import androidx.camera.core.impl.CameraCaptureMetaData.FlashState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,7 +31,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var videoCapture: VideoCapture
+    private lateinit var camera: Camera
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -46,11 +51,58 @@ class MainActivity : AppCompatActivity() {
                 Constants.REQUEST_CODE_PERMISSIONS
             )
         }
+
         binding.photoClickBtn.setOnClickListener {
             takePhoto()
         }
+
+        var clicked = 0
         binding.videoRecordBtn.setOnClickListener {
-            startRecording()
+            clicked += 1
+            if (clicked > 2) clicked = 1
+            when (clicked) {
+                1 -> {
+                    it.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
+                    startRecording()
+                }
+                2 -> {
+                    it.setBackgroundColor(ContextCompat.getColor(this, R.color.purple))
+                    videoCapture.stopRecording()
+                }
+            }
+        }
+
+        binding.flipBtn.setOnClickListener {
+            lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
+                CameraSelector.LENS_FACING_BACK
+            } else {
+                CameraSelector.LENS_FACING_FRONT
+            }
+            startCamera()
+        }
+
+        binding.flashOff.setOnClickListener {
+            setFlashIcon()
+        }
+    }
+
+    private fun setFlashIcon() {
+        if (::camera.isInitialized) {
+            if (camera.cameraInfo.hasFlashUnit()) {
+                if (camera.cameraInfo.torchState.value == TorchState.ON) {
+                    camera.cameraControl.enableTorch(false)
+                    binding.flasOn.visibility = View.INVISIBLE
+                    binding.flashOff.visibility = View.VISIBLE
+                } else {
+                    camera.cameraControl.enableTorch(true)
+                    binding.flasOn.visibility = View.VISIBLE
+                    binding.flashOff.visibility = View.INVISIBLE
+                }
+            } else {
+                Toast.makeText(this, "Flash is not available", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.e(Constants.TAG, "Camera not initialized")
         }
     }
 
@@ -64,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
+        imageCapture = imageCapture ?: return
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(Constants.FILE_NAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis()) + ".jpg"
@@ -75,9 +127,7 @@ class MainActivity : AppCompatActivity() {
             outputOption, ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo saved: $savedUri"
-
+                    val msg = "Photo saved:"
                     Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 }
 
@@ -90,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("RestrictedApi")
     private fun startRecording() {
-        val videoCapture = videoCapture ?: return
+        videoCapture = videoCapture ?: return
         val videoFile = File(
             outputDirectory,
             SimpleDateFormat(Constants.FILE_NAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis()) + ".mp4"
@@ -102,11 +152,9 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
             return
         }
+
         videoCapture.startRecording(
             outputOption, ContextCompat.getMainExecutor(this),
             object : VideoCapture.OnVideoSavedCallback {
@@ -121,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+
     }
 
     @SuppressLint("RestrictedApi")
@@ -136,11 +185,11 @@ class MainActivity : AppCompatActivity() {
             imageCapture = ImageCapture.Builder().build()
             videoCapture = VideoCapture.Builder().build()
 
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
+                camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture, videoCapture
                 )
             } catch (e: Exception) {
